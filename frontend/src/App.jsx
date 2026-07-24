@@ -6,6 +6,7 @@ import FacultyDashboard from './pages/FacultyDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import UploadResource from './pages/UploadResource';
 import ResourceList from './pages/ResourceList';
+import MyBookmarks from './pages/MyBookmarks';
 import ProtectedRoute from './routes/ProtectedRoute';
 
 function App() {
@@ -53,6 +54,14 @@ function App() {
         element={
           <ProtectedRoute>
             <ResourceList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bookmarks"
+        element={
+          <ProtectedRoute allowedRoles={['student']}>
+            <MyBookmarks />
           </ProtectedRoute>
         }
       />

@@ -7,6 +7,7 @@ const ResourceList = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
 
   const [filters, setFilters] = useState({
     branch: '',
@@ -34,8 +35,19 @@ const ResourceList = () => {
     }
   };
 
+  const fetchBookmarks = async () => {
+    try {
+      const { data } = await api.get('/bookmarks');
+      const ids = data.map((b) => b.resource && b.resource._id);
+      setBookmarkedIds(new Set(ids));
+    } catch (err) {
+      setBookmarkedIds(new Set());
+    }
+  };
+
   useEffect(() => {
     fetchResources();
+    fetchBookmarks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -46,6 +58,30 @@ const ResourceList = () => {
   const handleFilterSubmit = (e) => {
     e.preventDefault();
     fetchResources();
+  };
+
+  const toggleBookmark = async (resourceId) => {
+    const isBookmarked = bookmarkedIds.has(resourceId);
+
+    if (isBookmarked) {
+      try {
+        await api.delete('/bookmarks/' + resourceId);
+        const next = new Set(bookmarkedIds);
+        next.delete(resourceId);
+        setBookmarkedIds(next);
+      } catch (err) {
+        setError('Could not remove bookmark.');
+      }
+    } else {
+      try {
+        await api.post('/bookmarks/' + resourceId);
+        const next = new Set(bookmarkedIds);
+        next.add(resourceId);
+        setBookmarkedIds(next);
+      } catch (err) {
+        setError('Could not add bookmark.');
+      }
+    }
   };
 
   return (
@@ -115,6 +151,10 @@ const ResourceList = () => {
 
             {resources.map((r) => {
               const link = r.fileUrl || r.externalLink;
+              const isBookmarked = bookmarkedIds.has(r._id);
+              const starLabel = isBookmarked ? 'Remove bookmark' : 'Add bookmark';
+              const starSymbol = isBookmarked ? '\u2605' : '\u2606';
+              const starColor = isBookmarked ? '#d97706' : '#9ca3af';
 
               return (
                 <div key={r._id} className="bg-white p-4 rounded-lg shadow flex justify-between items-start">
@@ -127,11 +167,21 @@ const ResourceList = () => {
                       Uploaded by {r.uploadedBy?.name} - {r.viewCount} views - {r.downloadCount} downloads
                     </p>
                   </div>
-                  {link ? (
-                    <a href={link} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline whitespace-nowrap">
-                      Open
-                    </a>
-                  ) : null}
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => toggleBookmark(r._id)}
+                      title={starLabel}
+                      style={{ color: starColor, fontSize: '18px', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      {starSymbol}
+                    </button>
+                    {link ? (
+                      <a href={link} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline whitespace-nowrap">
+                        Open
+                      </a>
+                    ) : null}
+                  </div>
                 </div>
               );
             })}
