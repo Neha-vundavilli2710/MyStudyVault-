@@ -1,4 +1,5 @@
 import Resource from '../models/Resource.js';
+import { ingestResource } from '../services/ingestResource.js';
 
 // @desc   Create a resource (with optional file upload)
 // @route  POST /api/resources
@@ -34,6 +35,8 @@ export const createResource = async (req, res) => {
       fileUrl: req.file ? req.file.path : '',
       uploadedBy: req.user._id,
     });
+
+    ingestResource(resource);
 
     res.status(201).json(resource);
   } catch (error) {

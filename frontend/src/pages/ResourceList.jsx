@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import DashboardLayout from '../components/DashboardLayout';
 
@@ -159,7 +160,7 @@ const ResourceList = () => {
               return (
                 <div key={r._id} className="bg-white p-4 rounded-lg shadow flex justify-between items-start">
                   <div>
-                    <h2 className="font-medium text-gray-800">{r.title}</h2>
+                    <Link to={'/resources/' + r._id} className="font-medium text-gray-800 hover:underline">{r.title}</Link>
                     <p className="text-sm text-gray-500">
                       {r.subject} - {r.branch} - Sem {r.semester} - {r.type}
                     </p>
