@@ -111,3 +111,23 @@ export const resolveDoubt = async (req, res) => {
     res.status(500).json({ message: 'Failed to resolve doubt', error: error.message });
   }
 };
+
+
+// @desc   Quick doubt counts for dashboard widgets
+// @route  GET /api/doubts/summary
+// @access Any logged-in user
+export const getDoubtSummary = async (req, res) => {
+  try {
+    const query = req.user.role === 'student' ? { student: req.user._id } : {};
+
+    const [open, answered, resolved] = await Promise.all([
+      Doubt.countDocuments({ ...query, status: 'open' }),
+      Doubt.countDocuments({ ...query, status: 'answered' }),
+      Doubt.countDocuments({ ...query, status: 'resolved' }),
+    ]);
+
+    res.status(200).json({ open, answered, resolved });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch doubt summary', error: error.message });
+  }
+};

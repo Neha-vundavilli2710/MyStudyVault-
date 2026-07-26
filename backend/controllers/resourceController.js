@@ -149,3 +149,25 @@ export const deleteResource = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete resource', error: error.message });
   }
 };
+
+// @desc   Recent resources relevant to the student's branch/semester (or just recent, for faculty)
+// @route  GET /api/resources/recent
+// @access Any logged-in user
+export const getRecentResources = async (req, res) => {
+  try {
+    const query = {};
+    if (req.user.role === 'student') {
+      query.branch = req.user.branch;
+      query.semester = req.user.semester;
+    }
+
+    const resources = await Resource.find(query)
+      .populate('uploadedBy', 'name role')
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    res.status(200).json(resources);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch recent resources', error: error.message });
+  }
+};

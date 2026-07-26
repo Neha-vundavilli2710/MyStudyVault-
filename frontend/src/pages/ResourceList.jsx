@@ -3,6 +3,17 @@ import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import DashboardLayout from '../components/DashboardLayout';
 
+const TYPE_COLOR = {
+  'lecture-notes': '#378ADD',
+  assignment: '#8B6BC7',
+  'question-paper': '#E8A93A',
+  syllabus: '#3F7D5C',
+  'reference-material': '#5B6478',
+  'lab-material': '#C7576B',
+  'external-link': '#3F7D5C',
+  other: '#5B6478',
+};
+
 const ResourceList = () => {
   const [resources, setResources] = useState([]);
   const [total, setTotal] = useState(0);
@@ -88,100 +99,70 @@ const ResourceList = () => {
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto p-8">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Browse Resources</h1>
+        <h1 className="font-display text-2xl text-ink mb-1">Browse Resources</h1>
+        <p className="text-xs font-mono text-slate mb-6">the catalog</p>
 
-        <form
-          onSubmit={handleFilterSubmit}
-          className="flex flex-wrap gap-3 mb-6 bg-white p-4 rounded-lg shadow"
-        >
-          <input
-            type="text"
-            name="search"
-            value={filters.search}
-            onChange={handleFilterChange}
-            placeholder="Search..."
-            className="border border-gray-300 rounded px-3 py-1.5 text-sm flex-1 min-w-[150px]"
-          />
-          <input
-            type="text"
-            name="branch"
-            value={filters.branch}
-            onChange={handleFilterChange}
-            placeholder="Branch"
-            className="border border-gray-300 rounded px-3 py-1.5 text-sm w-28"
-          />
-          <input
-            type="number"
-            name="semester"
-            value={filters.semester}
-            onChange={handleFilterChange}
-            placeholder="Sem"
-            className="border border-gray-300 rounded px-3 py-1.5 text-sm w-20"
-          />
-          <input
-            type="text"
-            name="subject"
-            value={filters.subject}
-            onChange={handleFilterChange}
-            placeholder="Subject"
-            className="border border-gray-300 rounded px-3 py-1.5 text-sm w-32"
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700"
-          >
+        <form onSubmit={handleFilterSubmit} className="flex flex-wrap gap-3 mb-6 bg-white border border-hairline p-4 rounded-lg">
+          <input type="text" name="search" value={filters.search} onChange={handleFilterChange} placeholder="Search..." className="border border-hairline rounded px-3 py-1.5 text-sm flex-1 min-w-[150px] focus:outline-none focus:ring-1 focus:ring-ink" />
+          <input type="text" name="branch" value={filters.branch} onChange={handleFilterChange} placeholder="Branch" className="border border-hairline rounded px-3 py-1.5 text-sm w-28 focus:outline-none focus:ring-1 focus:ring-ink" />
+          <input type="number" name="semester" value={filters.semester} onChange={handleFilterChange} placeholder="Sem" className="border border-hairline rounded px-3 py-1.5 text-sm w-20 focus:outline-none focus:ring-1 focus:ring-ink" />
+          <input type="text" name="subject" value={filters.subject} onChange={handleFilterChange} placeholder="Subject" className="border border-hairline rounded px-3 py-1.5 text-sm w-32 focus:outline-none focus:ring-1 focus:ring-ink" />
+          <button type="submit" className="bg-ink text-paper px-4 py-1.5 rounded text-sm hover:bg-ink/90">
             Filter
           </button>
         </form>
 
         {error && (
-          <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2">
+          <div className="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2">
             {error}
           </div>
         )}
 
         {loading ? (
-          <p className="text-gray-500 text-sm">Loading...</p>
+          <p className="text-slate text-sm">Loading...</p>
         ) : resources.length === 0 ? (
-          <p className="text-gray-500 text-sm">No resources found.</p>
+          <p className="text-slate text-sm">No resources found.</p>
         ) : (
-          <div className="space-y-3">
-            <p className="text-sm text-gray-500">
+          <div className="space-y-2.5">
+            <p className="text-xs font-mono text-slate">
               {total} resource{total !== 1 ? 's' : ''} found
             </p>
 
             {resources.map((r) => {
               const link = r.fileUrl || r.externalLink;
               const isBookmarked = bookmarkedIds.has(r._id);
-              const starLabel = isBookmarked ? 'Remove bookmark' : 'Add bookmark';
-              const starSymbol = isBookmarked ? '\u2605' : '\u2606';
-              const starColor = isBookmarked ? '#d97706' : '#9ca3af';
+              const tabColor = TYPE_COLOR[r.type] || '#5B6478';
 
               return (
-                <div key={r._id} className="bg-white p-4 rounded-lg shadow flex justify-between items-start">
-                  <div>
-                    <Link to={'/resources/' + r._id} className="font-medium text-gray-800 hover:underline">{r.title}</Link>
-                    <p className="text-sm text-gray-500">
-                      {r.subject} - {r.branch} - Sem {r.semester} - {r.type}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Uploaded by {r.uploadedBy?.name} - {r.viewCount} views - {r.downloadCount} downloads
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => toggleBookmark(r._id)}
-                      title={starLabel}
-                      style={{ color: starColor, fontSize: '18px', background: 'none', border: 'none', cursor: 'pointer' }}
-                    >
-                      {starSymbol}
-                    </button>
-                    {link ? (
-                      <a href={link} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline whitespace-nowrap">
-                        Open
-                      </a>
-                    ) : null}
+                <div key={r._id} className="flex bg-white border border-hairline rounded-r-lg overflow-hidden">
+                  <div style={{ width: '5px', backgroundColor: tabColor }}></div>
+                  <div className="flex justify-between items-start flex-1 px-4 py-3">
+                    <div>
+                      <Link to={'/resources/' + r._id} className="text-sm font-medium text-ink hover:underline">
+                        {r.title}
+                      </Link>
+                      <p className="text-xs font-mono text-slate mt-1">
+                        {r.branch} &middot; SEM {r.semester} &middot; {r.subject}
+                      </p>
+                      <p className="text-xs text-slate mt-1">
+                        {r.type} &middot; {r.uploadedBy?.name} &middot; {r.viewCount} views &middot; {r.downloadCount} downloads
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => toggleBookmark(r._id)}
+                        title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+                        style={{ color: isBookmarked ? '#E8A93A' : '#B8B2A3', fontSize: '17px', background: 'none', border: 'none', cursor: 'pointer' }}
+                      >
+                        {isBookmarked ? '\u2605' : '\u2606'}
+                      </button>
+                      {link ? (
+                        <a href={link} target="_blank" rel="noreferrer" className="text-xs font-mono text-ink hover:underline whitespace-nowrap">
+                          open &rarr;
+                        </a>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               );

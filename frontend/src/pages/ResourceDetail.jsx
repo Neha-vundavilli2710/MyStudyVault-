@@ -57,7 +57,7 @@ const ResourceDetail = () => {
   if (loading) {
     return (
       <DashboardLayout>
-        <p className="p-8 text-gray-500 text-sm">Loading...</p>
+        <p className="p-8 text-slate text-sm">Loading...</p>
       </DashboardLayout>
     );
   }
@@ -65,7 +65,7 @@ const ResourceDetail = () => {
   if (error || !resource) {
     return (
       <DashboardLayout>
-        <p className="p-8 text-red-600 text-sm">{error || 'Resource not found.'}</p>
+        <p className="p-8 text-red-700 text-sm">{error || 'Resource not found.'}</p>
       </DashboardLayout>
     );
   }
@@ -75,21 +75,23 @@ const ResourceDetail = () => {
   return (
     <DashboardLayout>
       <div className="max-w-3xl mx-auto p-8">
-        <h1 className="text-2xl font-semibold text-gray-800">{resource.title}</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          {resource.subject} - {resource.branch} - Sem {resource.semester} - {resource.type}
+        <p className="text-xs font-mono text-slate mb-2">
+          {resource.branch} &middot; SEM {resource.semester} &middot; {resource.type}
         </p>
+        <h1 className="font-display text-2xl text-ink">{resource.title}</h1>
+        <p className="text-sm text-slate mt-1">{resource.subject}</p>
+
         {resource.description && (
-          <p className="text-sm text-gray-600 mt-3">{resource.description}</p>
+          <p className="text-sm text-ink/80 mt-3">{resource.description}</p>
         )}
         {link ? (
-          <a href={link} target="_blank" rel="noreferrer" className="inline-block mt-3 text-sm text-blue-600 hover:underline">
-            Open resource
+          <a href={link} target="_blank" rel="noreferrer" className="inline-block mt-3 text-sm font-mono text-ink hover:underline">
+            open resource &rarr;
           </a>
         ) : null}
 
-        <div className="mt-8 bg-white p-5 rounded-lg shadow">
-          <h2 className="font-medium text-gray-800 mb-3">AI Summary</h2>
+        <div className="mt-8 bg-white border border-hairline p-5 rounded-lg">
+          <h2 className="font-display text-lg text-ink mb-3">AI Summary</h2>
           <div className="flex flex-wrap gap-2 mb-4">
             {SUMMARY_TYPES.map((t) => (
               <button
@@ -97,10 +99,10 @@ const ResourceDetail = () => {
                 type="button"
                 onClick={() => handleSummarize(t.value)}
                 className={
-                  'text-xs px-3 py-1.5 rounded border ' +
+                  'text-xs font-mono px-3 py-1.5 rounded border ' +
                   (activeType === t.value
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50')
+                    ? 'bg-ink text-paper border-ink'
+                    : 'bg-white text-ink border-hairline hover:bg-paper')
                 }
               >
                 {t.label}
@@ -108,25 +110,25 @@ const ResourceDetail = () => {
             ))}
           </div>
 
-          {summaryLoading && <p className="text-sm text-gray-400">Generating...</p>}
+          {summaryLoading && <p className="text-sm text-slate">Generating...</p>}
 
           {summaryError && (
-            <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2">
+            <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2">
               {summaryError}
             </div>
           )}
 
           {summary && !summaryLoading && (
             <div>
-              <p className="text-sm text-gray-700 whitespace-pre-line">{summary}</p>
-              <p className="text-xs text-gray-400 mt-2">
-                {cached ? 'Loaded from cache' : 'Freshly generated'}
+              <p className="text-sm text-ink/90 whitespace-pre-line">{summary}</p>
+              <p className="text-xs font-mono text-slate mt-2">
+                {cached ? 'loaded from cache' : 'freshly generated'}
               </p>
             </div>
           )}
 
           {!summary && !summaryLoading && !summaryError && (
-            <p className="text-sm text-gray-400">Pick a summary type above.</p>
+            <p className="text-sm text-slate">Pick a summary type above.</p>
           )}
         </div>
       </div>

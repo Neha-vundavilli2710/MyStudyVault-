@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Bell } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -74,7 +75,7 @@ const Navbar = () => {
       <div className="flex items-center gap-5">
         <div className="relative" ref={dropdownRef}>
           <button type="button" onClick={() => setOpen(!open)} className="relative text-paper/70 hover:text-paper">
-            <span style={{ fontSize: '17px' }}>&#128276;</span>
+            <Bell size={18} strokeWidth={1.75} />
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-amber text-ink text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">
                 {unreadCount > 9 ? '9+' : unreadCount}

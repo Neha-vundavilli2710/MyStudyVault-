@@ -26,37 +26,31 @@ const NoticeBoard = () => {
   return (
     <DashboardLayout>
       <div className="max-w-3xl mx-auto p-8">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Notice Board</h1>
+        <h1 className="font-display text-2xl text-ink mb-1">Notice Board</h1>
+        <p className="text-xs font-mono text-slate mb-6">announcements for you</p>
 
-        {error && (
-          <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2">
-            {error}
-          </div>
-        )}
+        {error && <div className="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2">{error}</div>}
 
         {loading ? (
-          <p className="text-gray-500 text-sm">Loading...</p>
+          <p className="text-slate text-sm">Loading...</p>
         ) : notices.length === 0 ? (
-          <p className="text-gray-500 text-sm">No notices right now.</p>
+          <p className="text-slate text-sm">No notices right now.</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {notices.map((n) => (
-              <div
-                key={n._id}
-                className={
-                  'bg-white p-4 rounded-lg shadow border-l-4 ' +
-                  (n.priority === 'high' ? 'border-red-400' : 'border-gray-200')
-                }
-              >
-                <div className="flex justify-between items-start">
-                  <h3 className="font-medium text-gray-800">{n.title}</h3>
-                  <span className="text-xs text-gray-400 uppercase">{n.category}</span>
+              <div key={n._id} className="flex bg-white border border-hairline rounded-r-lg overflow-hidden">
+                <div style={{ width: '5px', backgroundColor: n.priority === 'high' ? '#C7576B' : '#E3DFD3' }}></div>
+                <div className="flex-1 px-4 py-3">
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-sm font-medium text-ink">{n.title}</h3>
+                    <span className="text-xs font-mono text-slate uppercase">{n.category}</span>
+                  </div>
+                  <p className="text-sm text-ink/80 mt-1">{n.description}</p>
+                  <p className="text-xs font-mono text-slate mt-2">
+                    {n.postedBy?.name}
+                    {n.eventDate ? ' \u00b7 event: ' + new Date(n.eventDate).toLocaleDateString() : ''}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-600 mt-1">{n.description}</p>
-                <p className="text-xs text-gray-400 mt-2">
-                  Posted by {n.postedBy?.name}
-                  {n.eventDate ? ' - Event: ' + new Date(n.eventDate).toLocaleDateString() : ''}
-                </p>
               </div>
             ))}
           </div>
