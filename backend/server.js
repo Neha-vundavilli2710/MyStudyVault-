@@ -12,6 +12,8 @@ import doubtRoutes from './routes/doubtRoutes.js';
 import noticeRoutes from './routes/noticeRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import referenceRoutes from './routes/referenceRoutes.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import { authLimiter, generalLimiter } from './middleware/rateLimiter.js';
 
@@ -44,6 +46,8 @@ app.use('/api/doubts', doubtRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/reference', referenceRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

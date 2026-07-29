@@ -35,12 +35,35 @@ const userSchema = new mongoose.Schema(
     department: { type: String, trim: true },
     subjectsHandled: [{ type: String, trim: true }],
 
+    // Faculty-only: branches this faculty member is assigned to (admin-managed).
+    // Used to scope the Branch dropdown on Upload Resource, and to gate which
+    // branches this faculty may post notices to (unless they hold a specialRole).
+    assignedBranches: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Branch',
+      },
+    ],
+
+    // Faculty-only: an optional special role that grants broader notice-posting
+    // permissions (all branches / selected branches) instead of the default
+    // "own department only" restriction.
+    specialRole: {
+      type: String,
+      enum: ['club-coordinator', 'nss-ncc', 'placement-cell', 'exam-cell', null],
+      default: null,
+    },
+
     profileImage: { type: String, default: '' },
     isApproved: {
       type: Boolean,
       default: function () {
         return this.role === 'student';
       },
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }

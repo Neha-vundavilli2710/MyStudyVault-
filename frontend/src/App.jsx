@@ -5,6 +5,10 @@ import Register from './pages/Register';
 import StudentDashboard from './pages/StudentDashboard';
 import FacultyDashboard from './pages/FacultyDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminFaculty from './pages/AdminFaculty';
+import AdminStudents from './pages/AdminStudents';
+import AdminReferenceData from './pages/AdminReferenceData';
+import AdminContent from './pages/AdminContent';
 import UploadResource from './pages/UploadResource';
 import ResourceList from './pages/ResourceList';
 import ResourceDetail from './pages/ResourceDetail';
@@ -26,6 +30,10 @@ function App() {
       <Route path="/student/dashboard" element={<ProtectedRoute allowedRoles={['student']}><StudentDashboard /></ProtectedRoute>} />
       <Route path="/faculty/dashboard" element={<ProtectedRoute allowedRoles={['faculty']}><FacultyDashboard /></ProtectedRoute>} />
       <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin/faculty" element={<ProtectedRoute allowedRoles={['admin']}><AdminFaculty /></ProtectedRoute>} />
+      <Route path="/admin/students" element={<ProtectedRoute allowedRoles={['admin']}><AdminStudents /></ProtectedRoute>} />
+      <Route path="/admin/reference-data" element={<ProtectedRoute allowedRoles={['admin']}><AdminReferenceData /></ProtectedRoute>} />
+      <Route path="/admin/content" element={<ProtectedRoute allowedRoles={['admin']}><AdminContent /></ProtectedRoute>} />
 
       <Route path="/resources/upload" element={<ProtectedRoute allowedRoles={['faculty', 'admin']}><UploadResource /></ProtectedRoute>} />
       <Route path="/resources" element={<ProtectedRoute><ResourceList /></ProtectedRoute>} />

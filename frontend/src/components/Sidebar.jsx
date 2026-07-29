@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, Home, FileSearch, Bookmark, HelpCircle, Sparkles, Megaphone, Upload, Users, ChevronDown } from 'lucide-react';
+import { BookOpen, Home, FileSearch, Bookmark, HelpCircle, Sparkles, Megaphone, Upload, Users, ChevronDown, GraduationCap, Layers, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const STUDENT_LINKS = [
@@ -21,7 +21,13 @@ const FACULTY_LINKS = [
   { to: '/notices/post', label: 'Post Notice', icon: Megaphone },
 ];
 
-const ADMIN_LINKS = [{ to: '/admin/dashboard', label: 'Dashboard', icon: Home }];
+const ADMIN_LINKS = [
+  { to: '/admin/dashboard', label: 'Overview', icon: Home },
+  { to: '/admin/faculty', label: 'Faculty', icon: Users },
+  { to: '/admin/students', label: 'Students', icon: GraduationCap },
+  { to: '/admin/reference-data', label: 'Reference Data', icon: Layers },
+  { to: '/admin/content', label: 'Content Oversight', icon: ShieldCheck },
+];
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
@@ -59,6 +65,7 @@ const Sidebar = () => {
           </span>
         </div>
         {user.role === 'faculty' && <p className="text-xs text-slate mt-1 ml-1">Faculty Portal</p>}
+        {user.role === 'admin' && <p className="text-xs text-slate mt-1 ml-1">Admin Console</p>}
       </div>
 
       <nav className="flex-1 px-3 space-y-1">
