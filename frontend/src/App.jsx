@@ -30,7 +30,7 @@ function App() {
       <Route path="/resources/upload" element={<ProtectedRoute allowedRoles={['faculty', 'admin']}><UploadResource /></ProtectedRoute>} />
       <Route path="/resources" element={<ProtectedRoute><ResourceList /></ProtectedRoute>} />
       <Route path="/resources/:id" element={<ProtectedRoute><ResourceDetail /></ProtectedRoute>} />
-      <Route path="/bookmarks" element={<ProtectedRoute allowedRoles={['student']}><MyBookmarks /></ProtectedRoute>} />
+      <Route path="/bookmarks" element={<ProtectedRoute allowedRoles={['student', 'faculty']}><MyBookmarks /></ProtectedRoute>} />
 
       <Route path="/doubts" element={<ProtectedRoute allowedRoles={['student']}><MyDoubts /></ProtectedRoute>} />
       <Route path="/faculty/doubts" element={<ProtectedRoute allowedRoles={['faculty', 'admin']}><StudentDoubts /></ProtectedRoute>} />

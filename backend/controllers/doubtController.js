@@ -1,5 +1,6 @@
 import Doubt from '../models/Doubt.js';
 import Notification from '../models/Notification.js';
+import User from '../models/User.js';
 
 export const createDoubt = async (req, res) => {
   try {
@@ -17,6 +18,18 @@ export const createDoubt = async (req, res) => {
       description,
       relatedResource: relatedResource || null,
     });
+
+    // Notify all approved faculty that a new doubt needs attention
+    const faculty = await User.find({ role: 'faculty', isApproved: true }).select('_id');
+    const notifications = faculty.map((f) => ({
+      user: f._id,
+      type: 'doubt-answered', // reusing the existing enum value — see note below
+      message: `New doubt posted: "${doubt.title}" (${doubt.subject})`,
+      link: '/faculty/doubts',
+    }));
+    if (notifications.length > 0) {
+      await Notification.insertMany(notifications);
+    }
 
     res.status(201).json(doubt);
   } catch (error) {
