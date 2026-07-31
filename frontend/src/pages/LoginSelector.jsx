@@ -248,7 +248,7 @@ const LoginSelector = () => {
         </label>
 
         <Link
-          to="#"
+          to="/forgot-password"
           className="font-semibold hover:underline"
           style={{ color: "#378ADD" }}
         >
@@ -405,7 +405,7 @@ const LoginSelector = () => {
         </label>
 
         <Link
-          to="#"
+          to="/forgot-password"
           className="font-semibold hover:underline"
           style={{ color: "#8B6BC7" }}
         >

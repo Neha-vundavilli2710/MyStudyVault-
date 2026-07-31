@@ -22,6 +22,8 @@ import PostNotice from './pages/PostNotice';
 import NoticeBoard from './pages/NoticeBoard';
 import AskAI from './pages/AskAI';
 import ProtectedRoute from './routes/ProtectedRoute';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   return (
@@ -52,6 +54,9 @@ function App() {
       <Route path="/notices" element={<ProtectedRoute><NoticeBoard /></ProtectedRoute>} />
 
       <Route path="/ask-ai" element={<ProtectedRoute><AskAI /></ProtectedRoute>} />
+
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
     </Routes>
   );
 }
