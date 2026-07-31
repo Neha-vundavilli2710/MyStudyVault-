@@ -128,8 +128,8 @@ const Landing = () => {
       /* Stats Strip                                                  */
       /* ============================================================ */}
       <section className="bg-white -mt-5 pb-8 relative z-10">
-  <div className="max-w-6xl mx-auto px-6">
-    <div className="flex flex-wrap justify-center gap-5">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-wrap justify-center gap-5">
 
       {/* Stat 1 */}
       <div className="bg-paper border border-hairline rounded-2xl px-6 py-4 flex items-center gap-4 shadow-sm hover:shadow-md transition-all duration-300">

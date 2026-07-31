@@ -46,33 +46,47 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('🔑 Login attempt for:', email);
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
     const user = await User.findOne({ email }).select('+password');
+    console.log('👤 User found:', user ? 'YES' : 'NO');
+    
     if (!user) {
+      console.log('❌ No user with email:', email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    console.log('🔐 User password hash exists:', user.password ? 'YES' : 'NO');
+    
     const isMatch = await user.matchPassword(password);
+    console.log('✅ Password match result:', isMatch);
+    
     if (!isMatch) {
+      console.log('❌ Password mismatch for user:', email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     if (user.role === 'faculty' && !user.isApproved) {
+      console.log('⏳ Faculty not approved:', email);
       return res.status(403).json({ message: 'Your faculty account is pending admin approval' });
     }
 
+    console.log('✔️ Login successful for:', email);
     res.status(200).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
       token: generateToken(user._id, user.role),
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
+    console.error('🚨 Login error:', error);
     res.status(500).json({ message: 'Login failed', error: error.message });
   }
 };

@@ -1,5 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import Landing from './pages/Landing';
+import LoginSelector from './pages/LoginSelector';
+import StudentLogin from './pages/StudentLogin';
+import FacultyLogin from './pages/FacultyLogin';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import StudentDashboard from './pages/StudentDashboard';
@@ -24,7 +27,9 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<LoginSelector />} />
+      <Route path="/student-login" element={<StudentLogin />} />
+      <Route path="/faculty-login" element={<FacultyLogin />} />  
       <Route path="/register" element={<Register />} />
 
       <Route path="/student/dashboard" element={<ProtectedRoute allowedRoles={['student']}><StudentDashboard /></ProtectedRoute>} />

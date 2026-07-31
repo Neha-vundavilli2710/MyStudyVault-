@@ -9,22 +9,23 @@ export const AuthProvider = ({ children }) => {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const login = async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password });
-    localStorage.setItem('user', JSON.stringify(data));
-    setUser(data);
-    return data;
+  // Simple login - just store the user data (used by LoginSelector)
+  const login = (userData) => {
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
   };
 
+  // Register - makes API call
   const register = async (payload) => {
     const { data } = await api.post('/auth/register', payload);
-    localStorage.setItem('user', JSON.stringify(data));
-    setUser(data);
+    localStorage.setItem('user', JSON.stringify(data.user || data));
+    setUser(data.user || data);
     return data;
   };
 
   const logout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     setUser(null);
   };
 
