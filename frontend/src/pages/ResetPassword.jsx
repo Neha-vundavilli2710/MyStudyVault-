@@ -111,107 +111,270 @@ const ResetPassword = () => {
       </nav>
 
       {/* Form */}
-      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-6 py-12">
-        <div className="w-full max-w-md">
-          <div className="bg-white">
-            {/* Header */}
-            <div className="text-center mb-10">
-              <div className="flex justify-center mb-6">
-                <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ backgroundColor: '#378ADD14' }}>
-                  <Lock size={40} color="#378ADD" />
-                </div>
-              </div>
-              <h1 className="font-display text-3xl text-ink mb-2">
-                Reset <span style={{ color: '#E8A93A' }}>Password</span>
-              </h1>
-              <p className="text-slate">Create a new password for your account</p>
+<div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-6 py-8">
+  <div className="w-full max-w-md">
+
+    <div className="bg-white rounded-2xl shadow-lg border border-hairline overflow-hidden">
+
+      {/* Header */}
+      <div
+        className="relative py-7 px-6 text-center text-white overflow-hidden"
+        style={{ backgroundColor: "#378ADD" }}
+      >
+
+        <div
+          className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-10"
+          style={{ backgroundColor: "#ffffff" }}
+        ></div>
+
+        <div
+          className="absolute -bottom-10 -left-10 w-24 h-24 rounded-full opacity-10"
+          style={{ backgroundColor: "#ffffff" }}
+        ></div>
+
+        <div className="relative z-10">
+
+          <div className="flex justify-center mb-4">
+
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
+            >
+              <Lock
+                size={26}
+                color="#ffffff"
+              />
             </div>
 
-            {!success ? (
-              <>
-                {errors.submit && (
-                  <div className="mb-6 p-4 rounded-lg text-sm text-red-700 flex items-start gap-3" style={{ backgroundColor: '#FF6B6B14' }}>
-                    <AlertCircle size={18} className="mt-0.5 shrink-0" />
-                    <span>{errors.submit}</span>
-                  </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  {/* Password */}
-                  <div>
-                    <label className="block text-sm font-semibold text-ink mb-2">New Password</label>
-                    <div className="flex items-center gap-3 border border-hairline rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/20" style={{ backgroundColor: '#F8F9FA' }}>
-                      <Lock size={20} color="#378ADD" />
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="Create a new password"
-                        className="flex-1 bg-transparent text-sm focus:outline-none text-ink placeholder-gray-400"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="text-slate hover:text-ink"
-                      >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
-                    {errors.password && <p className="text-xs text-red-600 mt-1">{errors.password}</p>}
-                  </div>
-
-                  {/* Confirm Password */}
-                  <div>
-                    <label className="block text-sm font-semibold text-ink mb-2">Confirm Password</label>
-                    <div className="flex items-center gap-3 border border-hairline rounded-lg px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/20" style={{ backgroundColor: '#F8F9FA' }}>
-                      <Lock size={20} color="#378ADD" />
-                      <input
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        placeholder="Re-enter your password"
-                        className="flex-1 bg-transparent text-sm focus:outline-none text-ink placeholder-gray-400"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="text-slate hover:text-ink"
-                      >
-                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
-                    {errors.confirmPassword && <p className="text-xs text-red-600 mt-1">{errors.confirmPassword}</p>}
-                  </div>
-
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-3.5 rounded-lg font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50 mt-8"
-                    style={{ backgroundColor: '#378ADD' }}
-                  >
-                    {loading ? 'Updating Password...' : 'Update Password'}
-                  </button>
-                </form>
-              </>
-            ) : (
-              <div className="text-center">
-                <div className="mb-6 flex justify-center">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: '#3F7D5C14' }}>
-                    <CheckCircle2 size={40} color="#3F7D5C" />
-                  </div>
-                </div>
-                <h2 className="font-display text-2xl text-ink mb-3">Password Reset Successful!</h2>
-                <p className="text-slate mb-6">
-                  Your password has been updated successfully. Redirecting to login...
-                </p>
-              </div>
-            )}
           </div>
+
+          <h1 className="font-display text-3xl font-bold mb-2">
+            Reset Password
+          </h1>
+
+          <p className="text-sm opacity-90">
+            Create a secure password for your account
+          </p>
+
         </div>
+
       </div>
+
+      {/* Body */}
+      <div className="p-7">
+
+        {!success ? (
+          <>
+          {errors.submit && (
+  <div
+    className="mb-5 p-3 rounded-lg text-sm text-red-700 flex items-start gap-2"
+    style={{ backgroundColor: "#FF6B6B14" }}
+  >
+    <AlertCircle
+      size={18}
+      className="mt-0.5 shrink-0"
+    />
+    <span>{errors.submit}</span>
+  </div>
+)}
+
+<form
+  onSubmit={handleSubmit}
+  className="space-y-5"
+>
+
+  {/* Password */}
+  <div>
+
+    <label className="block text-sm font-semibold text-ink mb-2">
+      New Password
+    </label>
+
+    <div
+      className="flex items-center gap-3 border border-hairline rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/20"
+      style={{ backgroundColor: "#F8F9FA" }}
+    >
+
+      <Lock
+        size={18}
+        color="#378ADD"
+      />
+
+      <input
+        type={showPassword ? "text" : "password"}
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+        placeholder="Create a new password"
+        className="flex-1 bg-transparent text-sm focus:outline-none text-ink placeholder-gray-400"
+      />
+
+      <button
+        type="button"
+        onClick={() => setShowPassword(!showPassword)}
+        className="text-slate hover:text-ink"
+      >
+        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+      </button>
+
+    </div>
+
+    {errors.password && (
+      <p className="text-xs text-red-600 mt-1">
+        {errors.password}
+      </p>
+    )}
+
+  </div>
+
+  {/* Confirm Password */}
+  <div>
+
+    <label className="block text-sm font-semibold text-ink mb-2">
+      Confirm Password
+    </label>
+
+    <div
+      className="flex items-center gap-3 border border-hairline rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/20"
+      style={{ backgroundColor: "#F8F9FA" }}
+    >
+
+      <Lock
+        size={18}
+        color="#378ADD"
+      />
+
+      <input
+        type={showConfirmPassword ? "text" : "password"}
+        name="confirmPassword"
+        value={formData.confirmPassword}
+        onChange={handleChange}
+        placeholder="Re-enter your password"
+        className="flex-1 bg-transparent text-sm focus:outline-none text-ink placeholder-gray-400"
+      />
+
+      <button
+        type="button"
+        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+        className="text-slate hover:text-ink"
+      >
+        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+      </button>
+
+    </div>
+
+    {errors.confirmPassword && (
+      <p className="text-xs text-red-600 mt-1">
+        {errors.confirmPassword}
+      </p>
+    )}
+
+  </div>
+
+  {/* Submit */}
+  <button
+    type="submit"
+    disabled={loading}
+    className="w-full py-2.5 rounded-xl font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
+    style={{ backgroundColor: "#378ADD" }}
+  >
+    {loading ? "Updating Password..." : "Update Password"}
+  </button>
+
+</form>
+
+{/* Divider */}
+<div className="my-5 flex items-center gap-3">
+
+  <div className="flex-1 h-px bg-hairline"></div>
+
+  <span className="text-xs text-slate uppercase">
+    OR
+  </span>
+
+  <div className="flex-1 h-px bg-hairline"></div>
+
+</div>
+
+{/* Back */}
+<div className="text-center">
+
+  <p className="text-sm text-slate">
+    Remember your password?
+  </p>
+
+  <Link
+    to="/login"
+    className="inline-flex items-center justify-center mt-2 font-semibold"
+    style={{ color: "#378ADD" }}
+  >
+    Back to Login →
+  </Link>
+
+
+</div>
+</>
+) : (
+
+  <div className="text-center">
+
+    <div className="flex justify-center mb-6">
+
+      <div
+        className="w-14 h-14 rounded-full flex items-center justify-center"
+        style={{ backgroundColor: "#3F7D5C14" }}
+      >
+        <CheckCircle2
+          size={26}
+          color="#3F7D5C"
+        />
+      </div>
+
+    </div>
+
+    <h2 className="font-display text-3xl font-bold text-ink mb-3">
+      Password Updated
+    </h2>
+
+    <p className="text-slate text-sm leading-6 mb-6">
+      Your password has been updated successfully.
+      <br />
+      You can now login using your new password.
+    </p>
+
+    <button
+      onClick={() => navigate("/login")}
+      className="w-full py-2.5 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+      style={{ backgroundColor: "#378ADD" }}
+    >
+      Go to Login
+    </button>
+
+    <div className="mt-5 pt-5 border-t border-hairline">
+
+      <p className="text-xs text-slate">
+        Your account is now secured with the new password.
+      </p>
+
+    </div>
+
+  </div>
+
+)}
+            </div>
+
+      {/* Bottom Accent */}
+      <div
+        className="h-1"
+        style={{ backgroundColor: "#378ADD" }}
+      ></div>
+
+    </div>
+
+  </div>
+
+</div>
+
     </div>
   );
 };

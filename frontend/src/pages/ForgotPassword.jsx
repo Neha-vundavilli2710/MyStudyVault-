@@ -50,37 +50,37 @@ const ForgotPassword = () => {
       </nav>
 
       {/* Form */}
-<div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-6 py-12">
+<div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-6 py-8">
   <div className="w-full max-w-md">
 
     <div className="bg-white rounded-2xl shadow-lg border border-hairline overflow-hidden">
 
       {/* Header */}
       <div
-        className="relative py-8 px-6 text-center text-white overflow-hidden"
+        className="relative py-7 px-6 text-center text-white overflow-hidden"
         style={{ backgroundColor: "#378ADD" }}
       >
 
         <div
-          className="absolute -top-10 -right-10 w-36 h-36 rounded-full opacity-10"
+          className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-10"
           style={{ backgroundColor: "#ffffff" }}
         ></div>
 
         <div
-          className="absolute -bottom-12 -left-10 w-28 h-28 rounded-full opacity-10"
+          className="absolute -bottom-10 -left-10 w-24 h-24 rounded-full opacity-10"
           style={{ backgroundColor: "#ffffff" }}
         ></div>
 
         <div className="relative z-10">
 
-          <div className="flex justify-center mb-5">
+          <div className="flex justify-center mb-4">
 
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
+              className="w-14 h-14 rounded-full flex items-center justify-center"
               style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
             >
               <Mail
-                size={30}
+                size={26}
                 color="#ffffff"
               />
             </div>
@@ -100,107 +100,113 @@ const ForgotPassword = () => {
       </div>
 
       {/* Body */}
-      <div className="p-8">
+      <div className="p-7">
+
         {!submitted ? (
-  <>
+          <>
+          {error && (
+  <div
+    className="mb-5 p-3 rounded-lg text-sm text-red-700 flex items-start gap-2"
+    style={{ backgroundColor: "#FF6B6B14" }}
+  >
+    <AlertCircle
+      size={18}
+      className="mt-0.5 shrink-0"
+    />
+    <span>{error}</span>
+  </div>
+)}
 
-    {error && (
-      <div
-        className="mb-5 p-3 rounded-lg text-sm text-red-700 flex items-start gap-2"
-        style={{ backgroundColor: "#FF6B6B14" }}
-      >
-        <AlertCircle size={18} className="mt-0.5 shrink-0" />
-        <span>{error}</span>
-      </div>
-    )}
+<form
+  onSubmit={handleSubmit}
+  className="space-y-5"
+>
 
-    <form onSubmit={handleSubmit} className="space-y-5">
+  {/* Email */}
+  <div>
 
-      {/* Email */}
-      <div>
+    <label className="block text-sm font-semibold text-ink mb-2">
+      Email Address
+    </label>
 
-        <label className="block text-sm font-semibold text-ink mb-2">
-          Email Address
-        </label>
+    <div
+      className="flex items-center gap-3 border border-hairline rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/20"
+      style={{ backgroundColor: "#F8F9FA" }}
+    >
 
-        <div
-          className="flex items-center gap-3 border border-hairline rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-500/20"
-          style={{ backgroundColor: "#F8F9FA" }}
-        >
+      <Mail
+        size={18}
+        color="#378ADD"
+      />
 
-          <Mail
-            size={18}
-            color="#378ADD"
-          />
-
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email address"
-            required
-            className="flex-1 bg-transparent text-sm focus:outline-none text-ink placeholder-gray-400"
-          />
-
-        </div>
-
-      </div>
-
-      {/* Submit */}
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
-        style={{ backgroundColor: "#378ADD" }}
-      >
-        {loading ? "Sending..." : "Send Reset Link"}
-      </button>
-
-    </form>
-
-    {/* Divider */}
-    <div className="my-6 flex items-center gap-3">
-
-      <div className="flex-1 h-px bg-hairline"></div>
-
-      <span className="text-xs text-slate uppercase">
-        OR
-      </span>
-
-      <div className="flex-1 h-px bg-hairline"></div>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter your email address"
+        required
+        className="flex-1 bg-transparent text-sm focus:outline-none text-ink placeholder-gray-400"
+      />
 
     </div>
 
-    {/* Back */}
-    <div className="text-center">
+  </div>
 
-      <p className="text-sm text-slate">
-        Remember your password?
-      </p>
+  {/* Submit */}
+  <button
+    type="submit"
+    disabled={loading}
+    className="w-full py-2.5 rounded-xl font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
+    style={{ backgroundColor: "#378ADD" }}
+  >
+    {loading ? "Sending..." : "Send Reset Link"}
+  </button>
 
-      <Link
-        to="/login"
-        className="inline-flex items-center justify-center mt-2 font-semibold"
-        style={{ color: "#378ADD" }}
-      >
-        Back to Login →
-      </Link>
+</form>
 
-    </div>
+{/* Divider */}
+<div className="my-5 flex items-center gap-3">
 
-  </>
-) : (
+  <div className="flex-1 h-px bg-hairline"></div>
+
+  <span className="text-xs text-slate uppercase">
+    OR
+  </span>
+
+  <div className="flex-1 h-px bg-hairline"></div>
+
+</div>
+
+{/* Back to Login */}
+<div className="text-center">
+
+  <p className="text-sm text-slate">
+    Remember your password?
+  </p>
+
+  <Link
+    to="/login"
+    className="inline-flex items-center justify-center mt-2 font-semibold"
+    style={{ color: "#378ADD" }}
+  >
+    Back to Login →
+  </Link>
+
+</div>
+
+          </>
+          ) : (
 
   <div className="text-center">
 
     <div className="flex justify-center mb-6">
 
       <div
-        className="w-16 h-16 rounded-full flex items-center justify-center"
+        className="w-14 h-14 rounded-full flex items-center justify-center"
         style={{ backgroundColor: "#3F7D5C14" }}
       >
         <CheckCircle2
-          size={30}
+          size={26}
           color="#3F7D5C"
         />
       </div>
@@ -223,13 +229,13 @@ const ForgotPassword = () => {
 
     <button
       onClick={() => navigate("/login")}
-      className="w-full py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+      className="w-full py-2.5 rounded-xl font-semibold text-white transition-all hover:opacity-90"
       style={{ backgroundColor: "#378ADD" }}
     >
       Back to Login
     </button>
 
-    <div className="mt-6 pt-5 border-t border-hairline">
+    <div className="mt-5 pt-5 border-t border-hairline">
 
       <p className="text-xs text-slate">
         Didn't receive the email?
@@ -251,13 +257,21 @@ const ForgotPassword = () => {
   </div>
 
 )}
-      
+
+      </div>
+
+      {/* Bottom Accent */}
+      <div
+        className="h-1"
+        style={{ backgroundColor: "#378ADD" }}
+      ></div>
 
     </div>
+
   </div>
+
 </div>
-      </div>
-    </div>
+  </div>
   );
 };
 

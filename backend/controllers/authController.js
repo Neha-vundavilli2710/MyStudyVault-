@@ -3,8 +3,6 @@ import generateToken from '../utils/generateToken.js';
 import { sendPasswordResetEmail } from '../utils/emailService.js';
 import crypto from 'crypto';
 
-// @desc   Register a new user (student or faculty)
-// @route  POST /api/auth/register
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role, collegeId, branch, semester, facultyId, department } = req.body;
@@ -31,53 +29,44 @@ export const registerUser = async (req, res) => {
     });
 
     res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      isApproved: user.isApproved,
       token: generateToken(user._id, user.role),
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
-    res.status(500).json({ message: 'Registration failed', error: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Registration failed'});
   }
 };
 
-// @desc   Login user
-// @route  POST /api/auth/login
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log('🔑 Login attempt for:', email);
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
     const user = await User.findOne({ email }).select('+password');
-    console.log('👤 User found:', user ? 'YES' : 'NO');
     
     if (!user) {
-      console.log('❌ No user with email:', email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
-
-    console.log('🔐 User password hash exists:', user.password ? 'YES' : 'NO');
     
     const isMatch = await user.matchPassword(password);
-    console.log('✅ Password match result:', isMatch);
     
     if (!isMatch) {
-      console.log('❌ Password mismatch for user:', email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     if (user.role === 'faculty' && !user.isApproved) {
-      console.log('⏳ Faculty not approved:', email);
       return res.status(403).json({ message: 'Your faculty account is pending admin approval' });
     }
 
-    console.log('✔️ Login successful for:', email);
     res.status(200).json({
       token: generateToken(user._id, user.role),
       user: {
@@ -88,15 +77,11 @@ export const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('🚨 Login error:', error);
-    res.status(500).json({ message: 'Login failed', error: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Login failed'});
   }
 };
 
-// ... existing loginUser and registerUser functions ...
-
-// @desc   Forgot password - send reset link
-// @route  POST /api/auth/forgot-password
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -105,19 +90,25 @@ export const forgotPassword = async (req, res) => {
       return res.status(400).json({ message: 'Email is required' });
     }
 
+    
+
     const user = await User.findOne({ email });
+    
     if (!user) {
-      return res.status(404).json({ message: 'User not found with this email' });
+      return res.status(200).json({
+        message: 'If an account exists with this email, a password reset link has been sent.',
+      });
     }
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
-    // Set token and expiry (30 minutes from now)
+    // Set token and expiry (30 minutes)
     user.resetPasswordToken = hashedToken;
     user.resetPasswordExpires = new Date(Date.now() + 30 * 60 * 1000);
     await user.save();
+
 
     // Create reset link
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
@@ -126,25 +117,22 @@ export const forgotPassword = async (req, res) => {
     try {
       await sendPasswordResetEmail(user.email, user.name, resetLink);
     } catch (emailError) {
-      console.error('Email error:', emailError);
-      // Clear tokens if email fails
+      console.error(emailError);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
       await user.save();
-      return res.status(500).json({ message: 'Failed to send reset email' });
+      return res.status(500).json({ message: 'Failed to send reset email. Please try again.' });
     }
 
     res.status(200).json({
-      message: 'Password reset link sent to your email. It will expire in 30 minutes.',
+      message: 'If an account exists with this email, a password reset link has been sent. It will expire in 30 minutes.',
     });
   } catch (error) {
-    console.error('Forgot password error:', error);
-    res.status(500).json({ message: 'Error processing forgot password request' });
+    console.error(error);
+    res.status(500).json({ message: 'Error processing request'});
   }
 };
 
-// @desc   Reset password with token
-// @route  POST /api/auth/reset-password/:token
 export const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
@@ -173,19 +161,18 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired reset token' });
     }
 
+
     // Update password
     user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
 
-    console.log('✔️ Password reset successful for:', user.email);
-
     res.status(200).json({
       message: 'Password has been reset successfully. Please login with your new password.',
     });
   } catch (error) {
-    console.error('Reset password error:', error);
-    res.status(500).json({ message: 'Error resetting password' });
+    console.error(error);
+    res.status(500).json({ message: 'Error resetting password'});
   }
 };
