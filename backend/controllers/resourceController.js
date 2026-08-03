@@ -1,3 +1,4 @@
+import axios from 'axios';
 import Resource from '../models/Resource.js';
 import { ingestResource } from '../services/ingestResource.js';
 import { getSimilarResources } from '../services/similarResources.js';
@@ -192,10 +193,35 @@ export const trackDownload = async (req, res) => {
     if (!resource) {
       return res.status(404).json({ message: 'Resource not found' });
     }
-    const url = resource.fileUrl || resource.externalLink;
+
+    if (resource.fileUrl) {
+      const response = await axios.get(resource.fileUrl, {
+        responseType: 'stream',
+      });
+
+      const dispositionHeader = response.headers['content-disposition'];
+      let filename = resource.fileUrl.split('?')[0].split('/').pop() || 'resource';
+      if (dispositionHeader) {
+        const match = dispositionHeader.match(/filename\*?=([^;]+)/i);
+        if (match) {
+          filename = decodeURIComponent(match[1].replace(/UTF-8''/, '').replace(/"/g, '').trim());
+        }
+      }
+
+      res.setHeader('Content-Type', response.headers['content-type'] || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      if (response.headers['content-length']) {
+        res.setHeader('Content-Length', response.headers['content-length']);
+      }
+      response.data.pipe(res);
+      return;
+    }
+
+    const url = resource.externalLink;
     if (!url) {
       return res.status(400).json({ message: 'No file or link available for this resource' });
     }
+
     res.status(200).json({ url });
   } catch (error) {
     res.status(500).json({ message: 'Failed to track download', error: error.message });

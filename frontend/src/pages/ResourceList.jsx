@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { Search, Landmark, CalendarDays, BookOpen, Filter, Star, ArrowRight } from 'lucide-react';
+import { Search, Filter, Star, ArrowRight, Landmark, CalendarDays, BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import api from '../api/axios';
-import { useToast } from '../context/ToastContext';
 import DashboardLayout from '../components/DashboardLayout';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+
+const SORT_OPTIONS = [
+  { value: 'latest', label: 'Latest' },
+  { value: 'most-viewed', label: 'Most Viewed' },
+  { value: 'most-downloaded', label: 'Most Downloaded' },
+];
 
 const TYPE_COLOR = {
   'lecture-notes': '#378ADD',
@@ -16,54 +23,67 @@ const TYPE_COLOR = {
   other: '#5B6478',
 };
 
-const getExt = (url) => {
-  if (!url) return 'LINK';
-  const clean = url.split('?')[0];
-  const parts = clean.split('.');
-  const ext = parts.length > 1 ? parts.pop().toUpperCase() : '';
-  return ext && ext.length <= 4 ? ext : 'FILE';
-};
-
-const SORT_OPTIONS = [
-  { value: 'latest', label: 'Latest' },
-  { value: 'most-viewed', label: 'Most Viewed' },
-  { value: 'most-downloaded', label: 'Most Downloaded' },
-];
-
 const HeaderIllustration = () => (
-  <svg viewBox="0 0 160 110" className="hidden sm:block w-32 h-24 shrink-0">
-    <rect x="20" y="28" width="55" height="52" rx="4" fill="#E8A93A" />
-    <path d="M20 36 L26 28 L52 28 L58 36 Z" fill="#E8A93A" />
-    <rect x="68" y="42" width="45" height="35" rx="3" fill="#FAF7F0" stroke="#1B2A4A" strokeWidth="2.5" />
-    <line x1="76" y1="52" x2="105" y2="52" stroke="#1B2A4A" strokeWidth="2" opacity="0.4" />
-    <line x1="76" y1="60" x2="105" y2="60" stroke="#1B2A4A" strokeWidth="2" opacity="0.4" />
-    <circle cx="115" cy="60" r="16" fill="none" stroke="#1B2A4A" strokeWidth="4" />
-    <line x1="126" y1="71" x2="136" y2="81" stroke="#1B2A4A" strokeWidth="4" strokeLinecap="round" />
+  <svg viewBox="0 0 180 120" className="hidden sm:block w-40 h-28 shrink-0">
+    <ellipse cx="90" cy="95" rx="85" ry="22" fill="#FBEFDA" />
+    <rect x="55" y="30" width="18" height="60" rx="2" fill="#8B6BC7" />
+    <rect x="75" y="25" width="18" height="65" rx="2" fill="#E8A93A" />
+    <rect x="95" y="35" width="18" height="55" rx="2" fill="#378ADD" />
+    <rect x="30" y="70" width="16" height="20" rx="3" fill="#3F7D5C" />
+    <ellipse cx="38" cy="64" rx="9" ry="6" fill="#3F7D5C" opacity="0.5" />
+    <circle cx="140" cy="35" r="2.5" fill="#E8A93A" />
+    <circle cx="150" cy="50" r="1.8" fill="#E8A93A" />
+    <circle cx="132" cy="48" r="1.5" fill="#E8A93A" />
   </svg>
 );
 
+const getExt = (url) => {
+  if (!url) return 'FILE';
+  const parts = url.split('.');
+  return parts[parts.length - 1].toUpperCase().slice(0, 4);
+};
+
 const ResourceList = () => {
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  
   const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
+  
+  const [filters, setFilters] = useState({
+    search: '',
+    branch: '',
+    semester: '',
+    subject: '',
+  });
+  
   const [sortBy, setSortBy] = useState('latest');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
-  const { showToast } = useToast();
+  const [showOtherBranches, setShowOtherBranches] = useState(false);
 
-  const [searchParams] = useSearchParams();
-  const [filters, setFilters] = useState({ branch: '', semester: '', subject: '', type: '', search: searchParams.get('search') || '' });
-
-  const fetchResources = async (targetPage) => {
+  const fetchResources = async (page = 1) => {
     setLoading(true);
     setError('');
     try {
-      const params = { page: targetPage, limit: 6 };
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) params[key] = value;
-      });
+      const params = new URLSearchParams();
+      params.append('search', filters.search);
+      
+      // AUTO-FILTER: Students see only their branch by default
+      if (user?.role === 'student' && !showOtherBranches) {
+        params.append('branch', user?.branch || filters.branch);
+      } else {
+        params.append('branch', filters.branch);
+      }
+      
+      params.append('semester', filters.semester);
+      params.append('subject', filters.subject);
+      params.append('page', page);
+      params.append('limit', 10);
+      
       const { data } = await api.get('/resources', { params });
       setResources(data.resources);
       setTotal(data.total);
@@ -71,7 +91,7 @@ const ResourceList = () => {
       setPage(data.page || 1);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load resources.');
-    } finally {
+      } finally {
       setLoading(false);
     }
   };
@@ -89,13 +109,15 @@ const ResourceList = () => {
     fetchResources(1);
     fetchBookmarks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [showOtherBranches]);
 
   const handleFilterChange = (e) => setFilters({ ...filters, [e.target.name]: e.target.value });
+  
   const handleFilterSubmit = (e) => {
     e.preventDefault();
     fetchResources(1);
   };
+  
   const goToPage = (p) => {
     if (p < 1 || p > totalPages) return;
     fetchResources(p);
@@ -109,13 +131,13 @@ const ResourceList = () => {
         const next = new Set(bookmarkedIds);
         next.delete(resourceId);
         setBookmarkedIds(next);
-        showToast('Removed from bookmarks');
+        showToast('Removed from bookmarks', 'info');
       } else {
         await api.post('/bookmarks/' + resourceId);
         const next = new Set(bookmarkedIds);
         next.add(resourceId);
         setBookmarkedIds(next);
-        showToast('Added to bookmarks');
+        showToast('Added to bookmarks', 'success');
       }
     } catch (err) {
       setError('Could not update bookmark.');
@@ -134,11 +156,26 @@ const ResourceList = () => {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto p-8">
         <div className="flex items-center justify-between mb-6">
-          <div>
+          <div className="flex-1">
             <h1 className="font-display text-3xl text-ink">Browse Resources</h1>
             <p className="text-sm text-slate mt-1">Explore notes, question papers, assignments and more.</p>
+            {user?.role === 'student' && (
+              <p className="text-xs text-slate mt-2">
+                {showOtherBranches ? '👀 Viewing all branches' : `📚 Viewing ${user?.branch} branch only`}
+              </p>
+            )}
           </div>
-          <HeaderIllustration />
+          <div className="flex flex-col items-end gap-3">
+            {user?.role === 'student' && (
+              <button
+                onClick={() => setShowOtherBranches(!showOtherBranches)}
+                className="text-sm font-medium px-3 py-1.5 rounded-lg border border-hairline bg-white hover:bg-paper transition-colors whitespace-nowrap"
+              >
+                {showOtherBranches ? 'Show My Branch Only' : 'Explore Other Branches'}
+              </button>
+            )}
+            <HeaderIllustration />
+          </div>
         </div>
 
         <form onSubmit={handleFilterSubmit} className="flex flex-wrap gap-3 mb-4 bg-white border border-hairline p-4 rounded-xl shadow-sm">
@@ -178,7 +215,12 @@ const ResourceList = () => {
         {loading ? (
           <p className="text-slate text-sm">Loading...</p>
         ) : sortedResources.length === 0 ? (
-          <p className="text-slate text-sm">No resources found.</p>
+          <div className="text-slate text-sm">
+            <p>No resources found.</p>
+            {user?.role === 'student' && !showOtherBranches && (
+              <p className="text-xs text-slate mt-2">Try toggling "Explore Other Branches" to see resources from other departments.</p>
+            )}
+          </div>
         ) : (
           <div className="space-y-3">
             {sortedResources.map((r) => {
@@ -206,21 +248,42 @@ const ResourceList = () => {
                     <Star size={19} color={isBookmarked ? '#E8A93A' : '#D8D2C4'} fill={isBookmarked ? '#E8A93A' : 'none'} strokeWidth={1.75} />
                   </button>
                   {link ? (
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        try {
-                          const { data } = await api.get('/resources/' + r._id + '/download');
-                          window.open(data.url, '_blank');
-                        } catch (err) {
-                          setError('Could not open resource.');
-                        }
-                      }}
-                      className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap"
-                      style={{ color: tabColor, backgroundColor: tabColor + '14' }}
-                    >
-                      Open <ArrowRight size={14} strokeWidth={2} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <a href={link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap" style={{ color: tabColor, backgroundColor: tabColor + '14' }}>
+                        View <ArrowRight size={14} strokeWidth={2} />
+                      </a>
+                      <button
+                        onClick={async () => {
+                          try {
+                            const res = await api.get('/resources/' + r._id + '/download', { responseType: 'blob' });
+                            const blob = res.data;
+                            let filename = r.fileUrl?.split('?')[0].split('/').pop() || 'resource';
+                            const disposition = res.headers && (res.headers['content-disposition'] || res.headers['Content-Disposition']);
+                            if (disposition) {
+                              const match = disposition.match(/filename\*?=([^;]+)/i);
+                              if (match) {
+                                filename = decodeURIComponent(match[1].replace(/UTF-8''/, '').replace(/"/g, '').trim());
+                              }
+                            }
+                            const urlObj = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = urlObj;
+                            a.download = filename;
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            window.URL.revokeObjectURL(urlObj);
+                            showToast('Downloaded', 'success');
+                          } catch (err) {
+                            setError('Could not download resource.');
+                          }
+                        }}
+                        className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg whitespace-nowrap"
+                        style={{ color: tabColor }}
+                      >
+                        Download <ArrowRight size={14} strokeWidth={2} />
+                      </button>
+                    </div>
                   ) : null}
                 </div>
               );

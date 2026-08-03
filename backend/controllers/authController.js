@@ -29,14 +29,16 @@ export const registerUser = async (req, res) => {
     });
 
     res.status(201).json({
-      token: generateToken(user._id, user.role),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+  token: generateToken(user._id, user.role),
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    branch: user.branch || '',
+    semester: user.semester || '',
+  },
+});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Registration failed'});
@@ -68,14 +70,16 @@ export const loginUser = async (req, res) => {
     }
 
     res.status(200).json({
-      token: generateToken(user._id, user.role),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+  token: generateToken(user._id, user.role),
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    branch: user.branch || '',
+    semester: user.semester || '',
+  },
+});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Login failed'});
