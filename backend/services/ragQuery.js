@@ -4,7 +4,7 @@ import Resource from '../models/Resource.js';
 import genAI from '../config/gemini.js';
 import { generateEmbedding } from '../utils/embeddings.js';
 
-export const answerQuestion = async (question, resourceId = null) => {
+export const answerQuestion = async (question, resourceId = null, conversationHistory = []) => {
   const questionEmbedding = await generateEmbedding(question, 'RETRIEVAL_QUERY');
 
   const vectorSearchStage = {
@@ -44,12 +44,23 @@ export const answerQuestion = async (question, resourceId = null) => {
 
   const context = relevantChunks.map((c, i) => `[Excerpt ${i + 1}]\n${c.text}`).join('\n\n');
 
+  // Build conversation history for context
+  let conversationContext = '';
+  if (conversationHistory && conversationHistory.length > 0) {
+    conversationContext = 'Previous conversation for context:\n';
+    conversationHistory.forEach((msg) => {
+      conversationContext += `${msg.role === 'user' ? 'Student' : 'Assistant'}: ${msg.content}\n`;
+    });
+    conversationContext += '\n';
+  }
+
   const prompt = `You are an academic study assistant. Answer the student's question using ONLY the excerpts below, taken from their uploaded course materials. If the excerpts don't contain enough information to answer, say so honestly instead of guessing or using outside knowledge.
 
-Excerpts:
+${conversationContext}
+Excerpts from course materials:
 ${context}
 
-Question: ${question}
+Current Question: ${question}
 
 Answer:`;
 
